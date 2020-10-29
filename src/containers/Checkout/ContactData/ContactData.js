@@ -7,7 +7,7 @@ import Input from '../../../components/UI/Input/Input'
 
 class ContactData extends Component {
     state = {
-        orderForm: {
+        orderForm: {          
             name: {
                 elementType: 'input',
                 elementConfig: {
@@ -83,14 +83,21 @@ class ContactData extends Component {
                         {value: 'cheapest', displayValue: 'Cheapest'},
                     ]
                 },
-                value: ''
+                validation: {},
+                value: 'asap',
+                valid: true
             },
         },
+        formIsValid: false,
         loading: false
     }
 
     checkValidity(value, rules) {
         let isValid = true;
+
+        if(!rules){
+            return true;
+        }
 
         if (rules.required) {
             isValid = value.trim() !== '' && isValid;
@@ -131,14 +138,18 @@ class ContactData extends Component {
 
     inputChangedHandler = (event, inputIndentifier) => {
         const updatedOrderForm = JSON.parse(JSON.stringify(this.state.orderForm));
-        let updatedFormElement = updatedOrderForm[inputIndentifier] 
+        const updatedFormElement = updatedOrderForm[inputIndentifier] 
 
         updatedFormElement.value = event.target.value;
-        if (updatedFormElement.validation){
-            updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
-        }
+        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
         updatedFormElement.touched = true;
-        this.setState({orderForm: updatedOrderForm});
+
+        let formIsValid = true;
+        for (let inputIndentifier in updatedOrderForm) {
+            formIsValid = updatedOrderForm[inputIndentifier].valid && formIsValid;
+        }
+
+        this.setState({orderForm: updatedOrderForm, formIsValid: formIsValid});
 
     }  
 
@@ -165,7 +176,7 @@ class ContactData extends Component {
                         changed={(event) => this.inputChangedHandler(event, formElement.id)} />
 
                 ))}
-                <Button btnType="Success" >ORDER</Button>
+                <Button btnType="Success" disabled={!this.state.formIsValid} >ORDER</Button>
             </form>
         );
         if (this.state.loading) {
