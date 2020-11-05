@@ -1,6 +1,5 @@
 import reducer from './auth';
 import * as actionTypes from '../actions/actionTypes';
-import { initIngredients } from '../actions';
 
 describe('auth reducer', () => {
     it('should return the inital state', () => {
